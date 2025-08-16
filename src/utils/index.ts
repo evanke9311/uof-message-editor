@@ -1,7 +1,18 @@
 import { useStorage } from '@vueuse/core'
 
 export const saveLSKey = 'save_template'
-export function saveTemplate({
+
+type FormItem = { key: string; value: string }
+type SavedTemplate = {
+  snippet: string
+  id: string
+  tableName: string
+  form: FormItem[]
+  updateTimestamp: number
+}
+export type StorageState = Record<string, SavedTemplate>
+
+export function saveSnippet({
   snippet,
   id,
   tableName,
@@ -10,16 +21,27 @@ export function saveTemplate({
   snippet: string
   id: string
   tableName: string
-  form: any[]
+  form: FormItem[]
 }) {
   try {
-    const state = useStorage(saveLSKey, {})
+    const state = useStorage<StorageState>(saveLSKey, {})
     state.value = {
       ...state.value,
       [snippet]: { snippet, id, tableName, form, updateTimestamp: new Date().valueOf() },
     }
   } catch (e) {
-    console.error('saveTemplate error: ', e)
+    console.error('saveSnippet error: ', e)
+  }
+}
+export function deleteSnippet(snippet: string) {
+  try {
+    const state = useStorage<StorageState>(saveLSKey, {})
+    console.log('deleteSnippet', snippet, state.value[snippet])
+    if (state.value[snippet]) {
+      delete state.value[snippet]
+    }
+  } catch (e) {
+    console.error('deleteSnippet error: ', e)
   }
 }
 

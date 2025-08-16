@@ -2,7 +2,8 @@
 import { NModal, NInput, NButton, NDropdown } from 'naive-ui'
 import { ref, computed } from 'vue'
 import { useStorage } from '@vueuse/core'
-import { saveLSKey } from '@/utils'
+import { saveLSKey, saveSnippet, deleteSnippet } from '@/utils'
+import type { StorageState } from '@/utils'
 import SaveDialog from '@/components/SaveDialog.vue'
 import dayjs from 'dayjs'
 
@@ -37,10 +38,11 @@ const options = [
     label: 'Delete',
     key: 'delete',
   },
-  {
-    label: 'Edit snippet',
-    key: 'edit',
-  },
+  // TODO: edit snippet
+  // {
+  //   label: 'Edit snippet',
+  //   key: 'edit',
+  // },
 ]
 const handleSelect = (key: string, item) => {
   switch (key) {
@@ -48,6 +50,7 @@ const handleSelect = (key: string, item) => {
       emit('load', item)
       break
     case 'delete':
+      deleteSnippet(item.snippet)
       break
     case 'edit':
       preloadSnippet.value = item.snippet
@@ -55,13 +58,15 @@ const handleSelect = (key: string, item) => {
       break
   }
 }
-const onSaveSnippet = (value: string) => {
-  console.log('value', value)
+const onEditSnippet = ({ snippet, oldSnippet }: { snippet: string; oldSnippet: string }) => {
+  console.log('snippet', snippet)
+  console.log('oldSnippet', oldSnippet)
+  // TODO: edit snippet
 }
 </script>
 
 <template lang="pug">
-.snippet-list
+.snippet-list(v-if="stateList.length")
   .card(v-for="(item) in stateList")
     NDropdown(trigger="hover" overlap placement="right" :options="options" @select="handleSelect($event, item)")
       div
@@ -72,7 +77,7 @@ const onSaveSnippet = (value: string) => {
   SaveDialog(
     v-model:show="isShowSaveDialog"
     :preloadSnippet="preloadSnippet"
-    @save="onSaveSnippet"
+    @edit-snippet="onEditSnippet"
   )
 </template>
 

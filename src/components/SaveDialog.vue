@@ -10,6 +10,7 @@ const props = defineProps(['show', 'preloadSnippet'])
 const emit = defineEmits<{
   (e: 'update:show', show: boolean): void
   (e: 'save', snippet: string): void
+  (e: 'edit-snippet', { snippet, oldSnippet }: { snippet: string; oldSnippet: string }): void
 }>()
 
 const state = useStorage(saveLSKey, {})
@@ -29,7 +30,7 @@ const modalShow = computed({
 watch(
   () => modalShow.value,
   (val) => {
-    if (val) {
+    if (val && props.preloadSnippet) {
       snippet.value = props.preloadSnippet
     }
   },
@@ -37,14 +38,20 @@ watch(
 )
 
 const emitSave = () => {
-  if (allStateKeys.value.includes(snippet.value)) {
-    message.error('Avoid using the same snippet name')
-    return
-  }
-  if (snippet.value) {
-    emit('save', snippet.value)
+  if (props.preloadSnippet) {
+    emit('edit-snippet', { snippet: snippet.value, oldSnippet: props.preloadSnippet })
     modalShow.value = false
     snippet.value = ''
+  } else {
+    if (allStateKeys.value.includes(snippet.value)) {
+      message.error('Avoid using the same snippet name')
+      return
+    }
+    if (snippet.value) {
+      emit('save', snippet.value)
+      modalShow.value = false
+      snippet.value = ''
+    }
   }
 }
 </script>
@@ -52,9 +59,9 @@ const emitSave = () => {
 <template lang="pug">
 NModal(v-model:show="modalShow")
   .content
-    div type snippet to save
-    div {{ allStateKeys }}
-    NInput(v-model:value="snippet" type="text")
+    div type snippet to name save
+    div current snippet: {{ allStateKeys.join(', ') }}
+    NInput(v-model:value="snippet" type="text" placeholder="enter snippet name")
     .button
       NButton(type="primary" @click="emitSave") save
 
@@ -62,7 +69,7 @@ NModal(v-model:show="modalShow")
 
 <style scoped>
 .content {
-  width: 200px;
+  width: 400px;
   background-color: #1a1a1a;
   padding: 12px 20px;
 

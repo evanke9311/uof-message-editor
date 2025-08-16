@@ -18,7 +18,7 @@ import {
   ArrowUp as ArrowUpIcon,
   ArrowDown as ArrowDownIcon,
 } from '@vicons/ionicons5'
-import { incrementSerial, saveTemplate } from '@/utils'
+import { incrementSerial, saveSnippet } from '@/utils'
 import SaveDialog from '@/components/SaveDialog.vue'
 import ImportDialog from '@/components/ImportDialog.vue'
 import SnippetList from '@/components/SnippetList.vue'
@@ -66,7 +66,7 @@ const showSaveDialog = () => {
   isShowSaveDialog.value = !isShowSaveDialog.value
 }
 const onSave = (snippet: string) => {
-  saveTemplate({
+  saveSnippet({
     snippet,
     id: unref(idValue),
     tableName: unref(tableName),
@@ -92,10 +92,10 @@ const deleteRow = (index: number) => {
 const openImportDialog = () => {
   showImportDialog.value = !showImportDialog.value
 }
-const loadFromSavedSnippet = (data) => {
+const loadFromSavedSnippet = (data: { id?: string; form?: FormItem[]; tableName?: string }) => {
   try {
     idValue.value = data?.id || ''
-    form.value = data?.form || ''
+    form.value = data?.form || []
     tableName.value = data?.tableName || ''
     if (idValue.value && form.value && tableName.value) {
       message.success('Load successful')
