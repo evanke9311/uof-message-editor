@@ -43,7 +43,7 @@ const form = ref<FormItem[]>([])
 const formKeys = computed(() => form.value.map((f) => f.key).join(', '))
 const formValues = computed(() => form.value.map((f) => f.value).join(', '))
 const uofMessage = computed(() => {
-  return `INSERT INTO ${tableName.value} (id, ${formKeys.value}) VALUES ("${idValue.value}", ${formValues.value});`
+  return `INSERT INTO ${tableName.value} (id, ${formKeys.value}) VALUES ('${idValue.value}', ${formValues.value});`
 })
 
 const addForm = () => {
@@ -53,8 +53,13 @@ const onCopy = () => {
   if (autoUpdate.value) {
     idValue.value = incrementSerial(idValue.value)
   }
+
+  const uof = uofMessage.value
+  // add a line break
+  const formattedMessage = uof.replace(/(VALUES)/, '\n$1')
+
   navigator.clipboard
-    .writeText(uofMessage.value)
+    .writeText(formattedMessage)
     .then(() => {
       message.success('success')
     })

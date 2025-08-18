@@ -120,8 +120,7 @@ export function parseInsertSQL(sql: string): KeyValue[] {
 
   return columns.map((col, i) => {
     const rawVal = values[i]
-    const cleaned =
-      rawVal === 'NULL' || rawVal === 'NOW()' ? rawVal : rawVal.replace(/^['"]|['"]$/g, '') // remove outer quotes
+    const cleaned = col.toLowerCase() === 'id' ? rawVal.replace(/^['"]|['"]$/g, '') : rawVal
     return { key: col, value: cleaned }
   })
 }

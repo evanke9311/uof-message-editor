@@ -70,7 +70,7 @@ const onEditSnippet = ({ snippet, oldSnippet }: { snippet: string; oldSnippet: s
   .card(v-for="(item) in stateList")
     NDropdown(trigger="hover" overlap placement="right" :options="options" @select="handleSelect($event, item)")
       div
-        div snippet: {{ item.snippet }}
+        div.snippet-name snippet name: {{ item.snippet }}
         div table name: {{ item.tableName }}
         div update time: {{ updateTime(item.updateTimestamp) }}
 
@@ -93,6 +93,11 @@ const onEditSnippet = ({ snippet, oldSnippet }: { snippet: string; oldSnippet: s
     padding: 12px;
     &:hover {
       background-color: rgba(127, 231, 196, 0.1);
+    }
+
+    .snippet-name {
+      color: #eee;
+      font-weight: 500;
     }
   }
 }
